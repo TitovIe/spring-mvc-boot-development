@@ -6,13 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 public class Application {
-    private static final Map<Integer, Account> accounts = new HashMap<>();
-
     public static void main(String... args) {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("application-config.xml");
         OperationService operationService = context.getBean(OperationService.class);
