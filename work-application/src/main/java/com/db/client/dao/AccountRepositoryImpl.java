@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -25,8 +26,8 @@ public class AccountRepositoryImpl implements AccountRepository {
         return account;
     }
     @Override
-    public Account create(Integer accountId, BigDecimal accountAmount, Boolean state) {
-        Account account = new Account(accountId, accountAmount, state);
+    public Account create(Integer clientId, Integer accountId, BigDecimal accountAmount, Boolean state) {
+        Account account = new Account(clientId, accountId, accountAmount, state);
         accountMap.put(accountId, account);
         return account;
     }
@@ -39,5 +40,10 @@ public class AccountRepositoryImpl implements AccountRepository {
     @Override
     public Collection<Account> findAll() {
         return accountMap.values();
+    }
+
+    @Override
+    public Collection<Account> findAllByClientId(Integer clientId) {
+        return accountMap.values().stream().filter(account -> account.getClientId().equals(clientId)).collect(Collectors.toSet());
     }
 }

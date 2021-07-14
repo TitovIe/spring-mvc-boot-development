@@ -6,7 +6,6 @@ import com.db.client.domain.Account;
 import com.db.client.domain.Client;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -16,52 +15,53 @@ import java.util.*;
 public class OperationService {
     private final AccountRepository accountRepository;
     private final ClientRepository clientRepository;
-    private final Map<Client, Set<Account>> clientAccountMap;
 
     @Autowired
-    public OperationService(@Value("${initial.capacity.account.map}") int initialCapacity, AccountRepository accountRepository, ClientRepository clientRepository) {
+    public OperationService(AccountRepository accountRepository, ClientRepository clientRepository) {
         this.accountRepository = accountRepository;
         this.clientRepository = clientRepository;
-        this.clientAccountMap = new HashMap<>(initialCapacity);
-        log.debug("Map of clientAccount with capacity {} was created", initialCapacity);
     }
 
-    public void createAccountForClient(Integer clientId, Account account) {
-        Client client = clientRepository.findById(clientId);
+    public void createAccountForClient(Account account) {
+        Client client = clientRepository.findById(account.getClientId());
         if(client == null) {
-            log.warn("The client with clientId {} doesn't exist", clientId);
+            log.warn("The client with clientId {} doesn't exist", account.getClientId());
         } else {
-            clientAccountMap.get(client).add(account);
             accountRepository.create(account);
             log.debug("Account was created: {}", account);
         }
     }
 
-    public void findAccountState(Integer clientId, Integer accountId) {
+    public Boolean findAccountState(Integer clientId, Integer accountId) {
+        Boolean state = false;
         if(clientRepository.findById(clientId) == null) {
             log.warn("The client with clientId {} doesn't exist", clientId);
         } else if(accountRepository.findById(accountId) == null) {
             log.warn("The account with accountId {} doesn't exist", accountId);
         }
         else {
-            Boolean state = accountRepository.findById(accountId).getState();
+            state = accountRepository.findById(accountId).getState();
             log.debug("State of accountId {} is {}", accountId, state);
             //clientAccountMap.get(client).stream().filter(account -> account.getAccountId().equals(accountId)).findFirst().get().getState();
         }
+        return state;
     }
 
-    public void findAllAccount(Integer clientId) {
+    public Collection<Account> findAllAccount(Integer clientId) {
         Client client = clientRepository.findById(clientId);
+        Collection<Account> accounts;
         if (client == null) {
+            accounts = new HashSet<>();
             log.warn("The client with clientId {} doesn't exist", clientId);
         } else {
-            Set<Account> accounts = clientAccountMap.get(client);
+            accounts = accountRepository.findAllByClientId(clientId);
             log.debug("Accounts of clientId {} are {}", clientId, accounts);
         }
+        return accounts;
     }
 
-    public void createClient(Integer clientId, String clientName) {
-        clientAccountMap.put(clientRepository.create(clientId, clientName), new HashSet<>());
-        log.debug("Client with clientId {} and clientName {} was created", clientId, clientName);
+    public void createClient(Client client) {
+        clientRepository.create(client);
+        log.debug("Client with clientId {} and clientName {} was created", client.getClientId(), client.getClientName());
     }
 }
