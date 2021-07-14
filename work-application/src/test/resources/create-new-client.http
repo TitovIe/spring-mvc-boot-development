@@ -1,0 +1,18 @@
+POST http://localhost:8080/spring-mvc-webapp/api/operation/client
+Content-Type: application/json
+
+{
+  "clientName": "Ilya Titov",
+  "clientId": 1
+}
+
+###
+POST http://localhost:8080/spring-mvc-webapp/api/operation/client
+Content-Type: application/json
+
+{
+  "clientName": "Sanya Karakulev",
+  "clientId": 2
+}
+
+###

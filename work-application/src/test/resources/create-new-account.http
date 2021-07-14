@@ -1,0 +1,11 @@
+POST http://localhost:8080/spring-mvc-webapp/api/operation/account
+Content-Type: application/json
+
+{
+  "clientId": 1,
+  "accountId": 2,
+  "accountAmount": 2.11,
+  "state": true
+}
+
+###
